@@ -2,22 +2,27 @@ let express = require('express');
 const path = require('path');
 const logger = require('morgan');
 let session = require('express-session');
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 let expressValidator = require('express-validator');
 
 let app = express();
 
-let ejs = require('ejs');
-
+// ejs
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// public folder
 app.use(express.static(__dirname + '/public'));
+
+// parsing form body
 app.use(express.urlencoded({ extended: true }));
 
+// morgan
 app.use(logger('dev'));
+
+// read json data
 app.use(express.json());
+
 app.use(cookieParser('ryan'));
 
 let user = {};
@@ -41,6 +46,7 @@ app.use(
       while (namespace.length) {
         formParam += `[${namespace.shift()}]`;
       }
+      console.log('format', formParam);
 
       return {
         param: formParam,
@@ -52,10 +58,6 @@ app.use(
 );
 
 app.get('/', (req, res, next) => {
-  // if (Object.keys(req.query) != 0) {
-  //   return next();
-  // }
-
   if (req.session.user) {
     res.render('index', { user: req.session.user });
   } else {
@@ -63,23 +65,16 @@ app.get('/', (req, res, next) => {
   }
 });
 
-app.get('/test', (req, res) => {
-  res.render('index');
-});
-
 app.get('/user/register', (req, res) => {
   res.render('register', { error_msg: false });
 });
 
-app.post('/users/register', (req, res) => {
-  console.log('req.body', req.body);
-
+app.post('/user/register', (req, res) => {
   req.checkBody('username', 'is in range 3 - 15').isLength({ min: 3, max: 15 });
 
   req
     .checkBody('username', 'Only use A-Z')
-    .notEmpty()
-    .blacklist(new RegExp('[^A-Za-z]'));
+    .blacklist(new RegExp('/[^A-Za-z]/'));
 
   req.checkBody('email', 'enter a valid email').isEmail();
 
@@ -95,11 +90,7 @@ app.post('/users/register', (req, res) => {
 
     res.render('register', {
       error_msg: true,
-      errors,
-      username,
-      password,
-      email,
-      password2
+      errors
     });
   } else {
     user.email = req.body.email;
@@ -108,21 +99,16 @@ app.post('/users/register', (req, res) => {
 
     req.session.user = user;
 
-    res.redirect('/show-me-my-page');
+    res.redirect('/showRegisterForm');
   }
 });
 
-app.get('/show-me-my-page', (req, res) => {
+app.get('/showRegisterForm', (req, res) => {
   if (req.session.user) {
     res.render('index', { user: req.session.user });
   } else {
     res.render('index', { user: null });
   }
-});
-
-app.post('/', (req, res) => {
-  console.log(req.body);
-  res.json(req.body);
 });
 
 app.listen(3000, () => console.log('👹: 3000'));

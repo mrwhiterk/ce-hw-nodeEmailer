@@ -1,9 +1,13 @@
-const express           = require('express'),
-      app               = express(),
-      session           = require('express-session'),
-      cookieParser      = require('cookie-parser'),
-      expressValidator  = require('express-validator'),
-      logger            = require('morgan')
+const express = require('express'),
+  app = express(),
+  session = require('express-session'),
+  cookieParser = require('cookie-parser'),
+  expressValidator = require('express-validator'),
+  logger = require('morgan');
+
+const nodeMailer = require('nodemailer'),
+  Secret = require('./secret'),
+  pass = new Secret().getPass();
 
 app.set('view engine', 'ejs');
 
@@ -60,6 +64,10 @@ app.get('/user/register', (req, res) => {
   res.render('register', { error_msg: false, user: req.session.user });
 });
 
+app.get('/user/contact', (req, res) => {
+  res.render('contact', { error_msg: false, user: req.session.user });
+});
+
 app.post('/user/register', (req, res) => {
   req.checkBody('username', 'is in range 3 - 15').isLength({ min: 3, max: 15 });
 
@@ -88,9 +96,48 @@ app.post('/user/register', (req, res) => {
   }
 });
 
+app.post('/user/contact', (req, res) => {
+  req.checkBody('name', 'not empty').notEmpty();
+
+  req.checkBody('email', 'enter a valid email').isEmail();
+
+  let errors = req.validationErrors();
+
+  if (errors) {
+    res.render('contact', {
+      error_msg: true,
+      errors,
+      data: req.body
+    });
+  } else {
+    let { name, email, comment } = req.body;
+
+    let transporter = nodeMailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'ryan.white@codeimmersives.com',
+        pass
+      }
+    });
+
+    let mailOptions = {
+      to: 'ryan.white@codeimmersives.com',
+      subject: `Email from ${name}`,
+      text: comment
+    };
+
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) console.log(err);
+
+      console.log(`email sent: ${info.response}`);
+      res.redirect('/');
+    });
+  }
+});
+
 app.get('/user/logout', (req, res) => {
   req.session.user = null;
-  res.redirect('/')
-})
+  res.redirect('/');
+});
 
 app.listen(3000, () => console.log('✅  3000'));

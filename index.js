@@ -1,10 +1,9 @@
-let express = require('express');
-let app = express();
-
-let session = require('express-session');
-const cookieParser = require('cookie-parser');
-let expressValidator = require('express-validator');
-const logger = require('morgan');
+const express           = require('express'),
+      app               = express(),
+      session           = require('express-session'),
+      cookieParser      = require('cookie-parser'),
+      expressValidator  = require('express-validator'),
+      logger            = require('morgan')
 
 app.set('view engine', 'ejs');
 
@@ -13,6 +12,7 @@ app.use(express.static(__dirname + '/public'));
 
 // parsing form body
 app.use(express.urlencoded({ extended: false }));
+
 app.use(logger('dev'));
 
 app.use(express.json());
@@ -39,7 +39,6 @@ app.use(
       while (namespace.length) {
         formParam += `[${namespace.shift()}]`;
       }
-      console.log('format', formParam);
 
       return {
         param: formParam,
@@ -54,8 +53,11 @@ app.get('/', (req, res) => {
   res.render('index', { user: req.session.user });
 });
 
+/**
+ * user routes
+ */
 app.get('/user/register', (req, res) => {
-  res.render('register', { error_msg: false });
+  res.render('register', { error_msg: false, user: req.session.user });
 });
 
 app.post('/user/register', (req, res) => {
@@ -85,5 +87,10 @@ app.post('/user/register', (req, res) => {
     res.redirect('/');
   }
 });
+
+app.get('/user/logout', (req, res) => {
+  req.session.user = null;
+  res.redirect('/')
+})
 
 app.listen(3000, () => console.log('✅  3000'));

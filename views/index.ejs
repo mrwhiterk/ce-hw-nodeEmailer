@@ -34,19 +34,25 @@
               <span class="sr-only">(current)</span>
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/users/login">Login</a>
-          </li>
+          <% if (user) { %>
           <li class="nav-item">
             <a class="nav-link" href="/#">
               loggedIn as <%= user && user.username %>
             </a>
           </li>
+          <% } else { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/login">Login</a>
+          </li>
+          <% } %>
           <li class="nav-item">
             <a class="nav-link" href="/users/logout">Logout</a>
           </li>
         </ul>
       </div>
     </nav>
+    <main>
+      <h1 class="text-white text-center title">Blog</h1>
+    </main>
   </body>
 </html>

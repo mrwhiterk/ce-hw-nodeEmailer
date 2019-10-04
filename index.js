@@ -1,28 +1,21 @@
 let express = require('express');
-const path = require('path');
-const logger = require('morgan');
+let app = express();
+
 let session = require('express-session');
 const cookieParser = require('cookie-parser');
 let expressValidator = require('express-validator');
+const logger = require('morgan');
 
-let app = express();
-
-// ejs
-app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// public folder
+// set up public folder to serve static content
 app.use(express.static(__dirname + '/public'));
 
 // parsing form body
-app.use(express.urlencoded({ extended: true }));
-
-// morgan
+app.use(express.urlencoded({ extended: false }));
 app.use(logger('dev'));
 
-// read json data
 app.use(express.json());
-
 app.use(cookieParser('ryan'));
 
 let user = {};
@@ -57,12 +50,8 @@ app.use(
   })
 );
 
-app.get('/', (req, res, next) => {
-  if (req.session.user) {
-    res.render('index', { user: req.session.user });
-  } else {
-    res.render('index', { user: null });
-  }
+app.get('/', (req, res) => {
+  res.render('index', { user: req.session.user });
 });
 
 app.get('/user/register', (req, res) => {
@@ -86,29 +75,15 @@ app.post('/user/register', (req, res) => {
   let errors = req.validationErrors();
 
   if (errors) {
-    let { username, password, password2, email } = req.body;
-
     res.render('register', {
       error_msg: true,
-      errors
+      errors,
+      user: req.body
     });
   } else {
-    user.email = req.body.email;
-    user.username = req.body.username;
-    user.password = req.body.password;
-
-    req.session.user = user;
-
-    res.redirect('/showRegisterForm');
+    req.session.user = req.body;
+    res.redirect('/');
   }
 });
 
-app.get('/showRegisterForm', (req, res) => {
-  if (req.session.user) {
-    res.render('index', { user: req.session.user });
-  } else {
-    res.render('index', { user: null });
-  }
-});
-
-app.listen(3000, () => console.log('👹: 3000'));
+app.listen(3000, () => console.log('✅  3000'));

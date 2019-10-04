@@ -54,7 +54,10 @@ app.use(
 );
 
 app.get('/', (req, res) => {
-  res.render('index', { user: req.session.user });
+  res.render('index', {
+    user: req.session.user,
+    emailSuccess: req.query.emailSuccess
+  });
 });
 
 /**
@@ -62,10 +65,6 @@ app.get('/', (req, res) => {
  */
 app.get('/user/register', (req, res) => {
   res.render('register', { error_msg: false, user: req.session.user });
-});
-
-app.get('/user/contact', (req, res) => {
-  res.render('contact', { error_msg: false, user: req.session.user });
 });
 
 app.post('/user/register', (req, res) => {
@@ -96,6 +95,10 @@ app.post('/user/register', (req, res) => {
   }
 });
 
+app.get('/user/contact', (req, res) => {
+  res.render('contact', { error_msg: false, user: req.session.user });
+});
+
 app.post('/user/contact', (req, res) => {
   req.checkBody('name', 'not empty').notEmpty();
 
@@ -107,7 +110,8 @@ app.post('/user/contact', (req, res) => {
     res.render('contact', {
       error_msg: true,
       errors,
-      data: req.body
+      data: req.body,
+      user: {}
     });
   } else {
     let { name, email, comment } = req.body;
@@ -130,7 +134,8 @@ app.post('/user/contact', (req, res) => {
       if (err) console.log(err);
 
       console.log(`email sent: ${info.response}`);
-      res.redirect('/');
+
+      res.redirect(`/?emailSuccess=true`);
     });
   }
 });

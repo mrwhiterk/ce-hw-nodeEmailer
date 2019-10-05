@@ -9,6 +9,25 @@ const nodeMailer = require('nodemailer'),
   Secret = require('./secret'),
   pass = new Secret().getPass();
 
+let mongoose = require('mongoose');
+let indexRoutes = require('./routes/index');
+let userRoutes = require('./routes/user');
+
+/**
+ * DB
+ */
+mongoose
+  .connect('mongodb://localhost:27017/ce-blog-hw', {
+    useNewUrlParser: true,
+    useFindAndModify: false
+  })
+  .then(() => {
+    console.log('connected to DB');
+  })
+  .catch(err => {
+    console.log('error: ', err.message);
+  });
+
 app.set('view engine', 'ejs');
 
 // set up public folder to serve static content
@@ -53,16 +72,9 @@ app.use(
   })
 );
 
-app.get('/', (req, res) => {
-  res.render('index', {
-    user: req.session.user,
-    emailSuccess: req.query.emailSuccess
-  });
-});
+// app.get('/user', userRoutes);
+app.get('/', indexRoutes);
 
-/**
- * user routes
- */
 app.get('/user/register', (req, res) => {
   res.render('register', { error_msg: false, user: req.session.user });
 });

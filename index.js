@@ -13,13 +13,17 @@ let mongoose = require('mongoose');
 let indexRoutes = require('./routes/index');
 let userRoutes = require('./routes/user');
 
+let authChecker = require('./utils/authChecker');
+const isLoggedIn = require('./utils/isLoggedIn');
+
 /**
  * DB
  */
 mongoose
   .connect('mongodb://localhost:27017/ce-blog-hw', {
     useNewUrlParser: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    useUnifiedTopology: true
   })
   .then(() => {
     console.log('connected to DB');
@@ -41,7 +45,11 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(cookieParser('ryan'));
 
-let user = {};
+let user = {
+  email: 'dog@dog.com',
+  password: 'Dog@123',
+  username: 'doggy'
+};
 
 app.use(
   session({
@@ -72,28 +80,16 @@ app.use(
   })
 );
 
-// app.get('/user', userRoutes);
 app.get('/', indexRoutes);
 
 app.get('/user/register', (req, res) => {
+  console.log('req session', req.session.user);
   res.render('register', { error_msg: false, user: req.session.user });
 });
 
-app.post('/user/register', (req, res) => {
-  req.checkBody('username', 'is in range 3 - 15').isLength({ min: 3, max: 15 });
-
-  req
-    .checkBody('username', 'Only use A-Z')
-    .blacklist(new RegExp('/[^A-Za-z]/'));
-
-  req.checkBody('email', 'enter a valid email').isEmail();
-
-  req
-    .checkBody('password2', 'password is not matching')
-    .notEmpty()
-    .equals(req.body.password);
-
+app.post('/user/register', authChecker, (req, res) => {
   let errors = req.validationErrors();
+  console.log(errors);
 
   if (errors) {
     res.render('register', {
@@ -106,6 +102,31 @@ app.post('/user/register', (req, res) => {
     res.redirect('/');
   }
 });
+///////////////////// - working on
+app.post('/users/login', (req, res) => {
+  // req.checkBody('password').
+  let errors = req.validationErrors();
+
+  console.log('errors ', errors);
+
+  if (errors) {
+    res.render('login', {
+      error_msg: true,
+      errors,
+      user: req.body
+    });
+  } else {
+    console.log('user', user);
+    console.log('req.body', req.body);
+    if (user.email === req.body.email && user.password === req.body.password) {
+      console.log('hit');
+      req.session.user = user;
+    }
+    console.log('req.session.user', req.session.user);
+    res.redirect('/');
+  }
+});
+///////////
 
 app.get('/user/contact', (req, res) => {
   res.render('contact', { error_msg: false, user: req.session.user });
@@ -126,7 +147,7 @@ app.post('/user/contact', (req, res) => {
       user: {}
     });
   } else {
-    let { name, email, comment } = req.body;
+    let { name, comment } = req.body;
 
     let transporter = nodeMailer.createTransport({
       service: 'gmail',
@@ -153,8 +174,19 @@ app.post('/user/contact', (req, res) => {
 });
 
 app.get('/user/logout', (req, res) => {
-  req.session.user = null;
+  req.session.destroy();
   res.redirect('/');
 });
 
-app.listen(3000, () => console.log('✅  3000'));
+app.get('/user/login', (req, res) => {
+  console.log('req session user', req.session.user);
+  res.render('login', {
+    success_msg: false,
+    error_msg: false,
+    user: req.session.user
+  });
+});
+
+// write route to handle request from login form
+
+app.listen(3001, () => console.log('✅  3001'));

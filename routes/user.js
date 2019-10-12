@@ -1,44 +1,52 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user');
+// const User = require('../models/user');
 
-router.get('/user/register', (req, res) => {
-  res.render('register', { error_msg: false, user: req.session.user });
+const userController = require('../controllers/user');
+// let authChecker = require('../utils/authChecker');
+
+const registerValidation = require('../utils/registerValidation')
+
+/** register */
+
+router.get('/register', (req, res) => {
+  if (req.isAuthenticated()) return res.redirect('/');
+
+  // res.render('register', { error_msg: false, user: req.session.user});
+  res.render('register', {
+    errors: req.flash('errors'),
+    errorMessage: null
+  })
 });
 
-router.post('/user/register', (req, res) => {
-  req.checkBody('username', 'is in range 3 - 15').isLength({ min: 3, max: 15 });
+router.post('/register', registerValidation, userController.register);
 
-  req
-    .checkBody('username', 'Only use A-Z')
-    .blacklist(new RegExp('/[^A-Za-z]/'));
+/** login */
+router.get('/login', (req, res) => {
+  if (req.isAuthenticated()) return res.redirect('/');
 
-  req.checkBody('email', 'enter a valid email').isEmail();
+  res.render('login', { errors: [] });
+})
 
-  req
-    .checkBody('password2', 'password is not matching')
-    .notEmpty()
-    .equals(req.body.password);
-
-  let errors = req.validationErrors();
-
-  if (errors) {
-    res.render('register', {
-      error_msg: true,
-      errors,
-      user: req.body
-    });
-  } else {
-    req.session.user = req.body;
-    res.redirect('/');
+router.post('/login', async (req, res) => {
+  try {
+    let user = await userController.login(req.body);
+    console.log('user ', user);
+    if (user) {
+      res.render('index', { successMessage: 'Successfully logged in'})
+    }
+  } catch (error) {
+    res.render('login', { errors: [error] });
   }
-});
+})
 
-router.get('/user/contact', (req, res) => {
+/** contact */
+
+router.get('/contact', (req, res) => {
   res.render('contact', { error_msg: false, user: req.session.user });
 });
 
-router.post('/user/contact', (req, res) => {
+router.post('/contact', (req, res) => {
   req.checkBody('name', 'not empty').notEmpty();
 
   req.checkBody('email', 'enter a valid email').isEmail();
@@ -79,7 +87,9 @@ router.post('/user/contact', (req, res) => {
   }
 });
 
-router.get('/user/logout', (req, res) => {
+/** logout */
+
+router.get('/logout', (req, res) => {
   req.session.user = null;
   res.redirect('/');
 });

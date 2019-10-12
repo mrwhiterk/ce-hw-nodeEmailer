@@ -1,16 +1,16 @@
-<% user = user %>
+<%# user = user %>
 <% include ./partials/header %>
 
     <h1 class="text-center">register page</h1>
 
     <div class="form-style container">
-      <% if (error_msg != false) { %> 
-        <% for (let i = 0; i < errors.length;i++) { %>
-          <div class="alert alert-danger">
-            <%= errors[i].message %>
-          </div>
-        <% } %> 
-      <% } %>
+      <%# if (error_msg != false) { %> 
+        <%# for (let i = 0; i < errors.length;i++) { %>
+          <!-- <div class="alert alert-danger"> -->
+            <%#= errors[i].message %>
+          <!-- </div> -->
+        <%# } %> 
+      <%# } %>
       <form method="POST" action="/user/register">
         <div class="form-group">
           <label>Username</label>
@@ -33,7 +33,7 @@
         <div class="form-group">
           <label>Password</label>
           <input
-            type="password"
+            type="text"
             class="form-control"
             name="password"
             placeholder="Password"
@@ -42,7 +42,7 @@
         <div class="form-group">
           <label>Confirm Password</label>
           <input
-            type="password"
+            type="text"
             class="form-control"
             name="password2"
             placeholder="Confirm Password"

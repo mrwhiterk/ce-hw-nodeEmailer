@@ -6,22 +6,15 @@ const cookieParser = require('cookie-parser');
 const expressValidator = require('express-validator');
 const logger = require('morgan');
 
-const nodeMailer = require('nodemailer');
-const Secret = require('./secret');
-const pass = new Secret().getPass();
+const mongoose = require('mongoose');
+const indexRouter = require('./routes');
+const userRouter = require('./routes/user');
 
-let mongoose = require('mongoose');
-let indexRouter = require('./routes');
-let userRouter = require('./routes/user');
-
-let authChecker = require('./utils/authChecker');
-const isLoggedIn = require('./utils/isLoggedIn');
-
-let createError = require('http-errors');
+const createError = require('http-errors');
 const flash = require('connect-flash');
 const passport = require('passport');
 
-let MongoStore = require('connect-mongo')(session);
+const MongoStore = require('connect-mongo')(session);
 
 require('dotenv').config();
 

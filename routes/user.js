@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
-// const User = require('../models/user');
-
 const userController = require('../controllers/user');
-// let authChecker = require('../utils/authChecker');
-
 const registerValidation = require('../utils/registerValidation')
 
-/** register */
+const nodeMailer = require('nodemailer');
+const Secret = require('../secret');
+const pass = new Secret().getPass();
 
+
+
+/** register */
 router.get('/register', (req, res) => {
   if (req.isAuthenticated()) return res.redirect('/');
 
@@ -82,7 +83,7 @@ router.post('/contact', (req, res) => {
 
       console.log(`email sent: ${info.response}`);
 
-      res.redirect(`/?emailSuccess=true`);
+      res.redirect(`/`);
     });
   }
 });

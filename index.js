@@ -15,6 +15,7 @@ const flash = require('connect-flash');
 const passport = require('passport');
 
 const MongoStore = require('connect-mongo')(session);
+const port = process.env.PORT || 3000;
 
 require('dotenv').config();
 
@@ -81,12 +82,12 @@ app.use(
   })
 );
 
-app.get('/', indexRouter);
+app.use('/', indexRouter);
 app.use('/user', userRouter);
 
 // app.get('/user/register', (req, res) => {
 //   console.log('req session', req.session.user);
-//   res.render('register', { error_msg: false, user: req.session.user });
+//   res.render('register', { errorMessage: false, user: req.session.user });
 // });
 
 // app.post('/user/register', authChecker, (req, res) => {
@@ -95,7 +96,7 @@ app.use('/user', userRouter);
 
 //   if (errors) {
 //     res.render('register', {
-//       error_msg: true,
+//       errorMessage: true,
 //       errors,
 //       user: req.body
 //     });
@@ -113,7 +114,7 @@ app.use('/user', userRouter);
 
 //   if (errors) {
 //     res.render('login', {
-//       error_msg: true,
+//       errorMessage: true,
 //       errors,
 //       user: req.body
 //     });
@@ -131,7 +132,7 @@ app.use('/user', userRouter);
 // ///////////
 
 // app.get('/user/contact', (req, res) => {
-//   res.render('contact', { error_msg: false, user: req.session.user });
+//   res.render('contact', { errorMessage: false, user: req.session.user });
 // });
 
 // app.post('/user/contact', (req, res) => {
@@ -143,7 +144,7 @@ app.use('/user', userRouter);
 
 //   if (errors) {
 //     res.render('contact', {
-//       error_msg: true,
+//       errorMessage: true,
 //       errors,
 //       data: req.body,
 //       user: {}
@@ -184,7 +185,7 @@ app.use('/user', userRouter);
 //   console.log('req session user', req.session.user);
 //   res.render('login', {
 //     success_msg: false,
-//     error_msg: false,
+//     errorMessage: false,
 //     user: req.session.user
 //   });
 // });
@@ -202,9 +203,7 @@ app.use((err, req, res, next) => {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
-
-})
+});
 
 // write route to handle request from login form
-
-app.listen(3000, () => console.log('✅  3000'));
+app.listen(port, () => console.log(`✅  PORT: ${port}`));

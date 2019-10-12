@@ -2,19 +2,16 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 
 async function register(req, res, next) {
-  let errorValidate = req.validationErrors();
-  if (errorValidate) {
-    res.render('register', {
-      errors: [],
-      errorMessage: true,
-      errorValidate
-    });
-    return;
+  let errors = req.validationErrors();
+
+  if (errors) {
+    res.statusCode = 300;
+    return res.render('register', { errors });
   }
   try {
     let user = await User.findOne({ email: req.body.email });
     if (user) {
-      req.flash('error', 'User already exist');
+      req.flash('errors', 'User already exist');
       return res.redirect(301, '/user/register');
     } else {
       const newUser = new User();
@@ -53,33 +50,43 @@ async function register(req, res, next) {
   }
 }
 
-function login(params) {
-  return new Promise((resolve, reject) => {
-    User.findOne({ email: params.email }).then(user => {
-      if (!user) {
-        let errors = {};
-        errors.message = 'User is not found';
-        errors.status = 400;
+async function login(req, res, next) {
+  try {
+    let user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      req.flash('errors', 'Invalid username or password');
+      let errors = req.flash('errors')
+      res.render('login', { errors });
+      return;
+    } else {
+      bcrypt.compare(req.body.password, user.password, (err, result) => {
+        if (!result) {
+          req.flash(
+            'errors',
+            'Whoops there is a problem with our server. Try again later'
+          );
+          let errors = req.flash('errors');
+          return res.render('login', { errors });
+        } else {
+          next()
+        }
+      });
+    }
+  } catch (error) {
+    return console.log(error);
+  }
+}
 
-        reject(errors);
-      } else {
-        bcrypt.compare(params.password, user.password, (err, result) => {
-          if (!result) {
-            let errors = {};
-            errors.message = 'Compare failed';
-            errors.status = 400;
-            reject(errors);
-          } else {
-            resolve(user);
-          }
-        });
-      }
-    })
-    .catch(err => reject(err))
-  });
+function isAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return res.redirect('/');
+  } else {
+    next();
+  }
 }
 
 module.exports = {
   register,
-  login
-}
+  login,
+  isAuthenticated
+};

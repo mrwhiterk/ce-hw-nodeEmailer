@@ -1,12 +1,12 @@
 const authChecker = (req, res, next) => {
-  userNameChecker(req);
+  usernameChecker(req);
   emailChecker(req);
   passwordChecker(req);
 
   next();
 };
 
-const userNameChecker = username => {
+const usernameChecker = username => {
   username
     .check('username')
     .notEmpty()

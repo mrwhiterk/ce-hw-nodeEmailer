@@ -3,14 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Albums</title>
+    <title>Node API</title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- <link
       rel="stylesheet"
       href="https://bootswatch.com/4/journal/bootstrap.min.css"
     /> -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
   <body>
@@ -30,24 +35,24 @@
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav ml-auto">
           <%# if (user) { %>
-            <!-- <li class="nav-item"> -->
-              <!-- <a class="nav-link" href="/#"> -->
-                <!-- loggedIn as  -->
-              <!-- </a> -->
-            <!-- </li> -->
-            <li class="nav-item">
-              <a class="nav-link" href="/user/logout">Logout</a>
-            </li>
+          <!-- <li class="nav-item"> -->
+          <!-- <a class="nav-link" href="/#"> -->
+          <!-- loggedIn as  -->
+          <!-- </a> -->
+          <!-- </li> -->
+          <li class="nav-item">
+            <a class="nav-link" href="/user/logout">Logout</a>
+          </li>
           <%# } else { %>
-            <li class="nav-item">
-              <a class="nav-link" href="/user/register">
-                Register
-                <span class="sr-only">(current)</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/user/login">Login</a>
-            </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/user/register">
+              Register
+              <span class="sr-only">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/user/login">Login</a>
+          </li>
           <%# } %>
           <li class="nav-item">
             <a class="nav-link" href="/user/contact">

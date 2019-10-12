@@ -1,48 +1,41 @@
-
 <% include ./partials/header %>
 
-    <h1 class="text-center">Contact page</h1>
+<h1 class="text-center">Contact page</h1>
 
-    <div class="form-style container">
-      <% if (error_msg != false) { %> 
-        <% for (let i = 0; i < errors.length;i++) { %>
-          <div class="alert alert-danger">
-            <%= errors[i].message %>
-          </div>
-        <% } %> 
-      <% } %>
-      <form method="POST" action="/user/contact">
-        <div class="form-group">
-          <label>Email</label>
-          <input
-          type="text"
-          class="form-control"
-          name="email"
-          placeholder="Email"
-          />
-        </div>
-        <div class="form-group">
-          <label>Name</label>
-          <input
-            type="text"
-            class="form-control"
-            name="name"
-            placeholder="Name"
-          />
-        </div>
-        <div class="form-group">
-          <label>Comment</label>
-          <textarea
-            type="text"
-            class="form-control"
-            name="comment"
-            placeholder="Comment"
-            rows="10"
-            columns="5"
-          ></textarea>
-        </div>
-        <button type="submit" class="btn btn-success">Submit</button>
-      </form>
+<div class="form-style container">
+  <% if (errorMessage != false) { %> <% for (let i = 0; i < errors.length;i++) {
+  %>
+  <div class="alert alert-danger">
+    <%= errors[i].message %>
+  </div>
+  <% } %> <% } %>
+  <form method="POST" action="/user/contact">
+    <div class="form-group">
+      <label>Email</label>
+      <input
+        type="text"
+        class="form-control"
+        name="email"
+        placeholder="Email"
+      />
     </div>
-  
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" class="form-control" name="name" placeholder="Name" />
+    </div>
+    <div class="form-group">
+      <label>Comment</label>
+      <textarea
+        type="text"
+        class="form-control"
+        name="comment"
+        placeholder="Comment"
+        rows="10"
+        columns="5"
+      ></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Submit</button>
+  </form>
+</div>
+
 <% include ./partials/footer %>

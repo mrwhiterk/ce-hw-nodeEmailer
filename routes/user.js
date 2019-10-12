@@ -1,50 +1,43 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user');
-const registerValidation = require('../utils/registerValidation')
-
+const authChecker = require('../utils/authChecker');
 const nodeMailer = require('nodemailer');
 const Secret = require('../secret');
 const pass = new Secret().getPass();
-
-
+const passport = require('passport');
 
 /** register */
-router.get('/register', (req, res) => {
-  if (req.isAuthenticated()) return res.redirect('/');
-
-  // res.render('register', { error_msg: false, user: req.session.user});
+router.get('/register', userController.isAuthenticated, (req, res) => {
   res.render('register', {
-    errors: req.flash('errors'),
-    errorMessage: null
-  })
+    errors: req.flash('errors')
+  });
 });
 
-router.post('/register', registerValidation, userController.register);
+router.post('/register', authChecker, userController.register);
 
 /** login */
-router.get('/login', (req, res) => {
-  if (req.isAuthenticated()) return res.redirect('/');
+router.get('/login', userController.isAuthenticated, (req, res) => {
 
-  res.render('login', { errors: [] });
-})
+  res.render('login', {
+    errors: req.flash('errors')
+  });
+});
 
-router.post('/login', async (req, res) => {
-  try {
-    let user = await userController.login(req.body);
-    console.log('user ', user);
-    if (user) {
-      res.render('index', { successMessage: 'Successfully logged in'})
-    }
-  } catch (error) {
-    res.render('login', { errors: [error] });
+router.post(
+  '/login',
+  userController.login,
+  passport.authenticate('local-login'),
+  (req, res) => {
+    console.log(req.user);
+    res.redirect('/');
   }
-})
+);
 
 /** contact */
 
 router.get('/contact', (req, res) => {
-  res.render('contact', { error_msg: false, user: req.session.user });
+  res.render('contact', { errorMessage: false, user: req.session.user });
 });
 
 router.post('/contact', (req, res) => {
@@ -56,7 +49,7 @@ router.post('/contact', (req, res) => {
 
   if (errors) {
     res.render('contact', {
-      error_msg: true,
+      errorMessage: true,
       errors,
       data: req.body,
       user: {}

@@ -3,7 +3,8 @@
 <h1 class="text-center">Contact page</h1>
 
 <div class="form-style container">
-  <% if (errorMessage != false) { %> <% for (let i = 0; i < errors.length;i++) {
+  <% if (errorMessage != false) { %> 
+  <% for (let i = 0; i < errors.length;i++) {
   %>
   <div class="alert alert-danger">
     <%= errors[i].message %>

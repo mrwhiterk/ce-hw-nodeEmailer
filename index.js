@@ -57,7 +57,6 @@ app.use(
 );
 
 app.use(flash());
-
 require('./lib/passport')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
@@ -85,111 +84,6 @@ app.use(
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 
-// app.get('/user/register', (req, res) => {
-//   console.log('req session', req.session.user);
-//   res.render('register', { errorMessage: false, user: req.session.user });
-// });
-
-// app.post('/user/register', authChecker, (req, res) => {
-//   let errors = req.validationErrors();
-//   console.log(errors);
-
-//   if (errors) {
-//     res.render('register', {
-//       errorMessage: true,
-//       errors,
-//       user: req.body
-//     });
-//   } else {
-//     req.session.user = req.body;
-//     res.redirect('/');
-//   }
-// });
-// ///////////////////// - working on
-// app.post('/users/login', (req, res) => {
-//   // req.checkBody('password').
-//   let errors = req.validationErrors();
-
-//   console.log('errors ', errors);
-
-//   if (errors) {
-//     res.render('login', {
-//       errorMessage: true,
-//       errors,
-//       user: req.body
-//     });
-//   } else {
-//     console.log('user', user);
-//     console.log('req.body', req.body);
-//     if (user.email === req.body.email && user.password === req.body.password) {
-//       console.log('hit');
-//       req.session.user = user;
-//     }
-//     console.log('req.session.user', req.session.user);
-//     res.redirect('/');
-//   }
-// });
-// ///////////
-
-// app.get('/user/contact', (req, res) => {
-//   res.render('contact', { errorMessage: false, user: req.session.user });
-// });
-
-// app.post('/user/contact', (req, res) => {
-//   req.checkBody('name', 'not empty').notEmpty();
-
-//   req.checkBody('email', 'enter a valid email').isEmail();
-
-//   let errors = req.validationErrors();
-
-//   if (errors) {
-//     res.render('contact', {
-//       errorMessage: true,
-//       errors,
-//       data: req.body,
-//       user: {}
-//     });
-//   } else {
-//     let { name, comment } = req.body;
-
-//     let transporter = nodeMailer.createTransport({
-//       service: 'gmail',
-//       auth: {
-//         user: 'ryan.white@codeimmersives.com',
-//         pass
-//       }
-//     });
-
-//     let mailOptions = {
-//       to: 'ryan.white@codeimmersives.com',
-//       subject: `Email from ${name}`,
-//       text: comment
-//     };
-
-//     transporter.sendMail(mailOptions, (err, info) => {
-//       if (err) console.log(err);
-
-//       console.log(`email sent: ${info.response}`);
-
-//       res.redirect(`/?emailSuccess=true`);
-//     });
-//   }
-// });
-
-// app.get('/user/logout', (req, res) => {
-//   req.session.destroy();
-//   res.redirect('/');
-// });
-
-// app.get('/user/login', (req, res) => {
-//   console.log('req session user', req.session.user);
-//   res.render('login', {
-//     success_msg: false,
-//     errorMessage: false,
-//     user: req.session.user
-//   });
-// });
-
 app.use((req, res, next) => {
   next(createError(404));
 });
@@ -199,11 +93,9 @@ app.use((err, req, res, next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
   // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
 
-// write route to handle request from login form
 app.listen(port, () => console.log(`✅  PORT: ${port}`));
